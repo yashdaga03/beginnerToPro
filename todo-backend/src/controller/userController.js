@@ -2,8 +2,8 @@ const userService = require('../service/userService');
 
 const createUser = async (req, res) => {
     try {
-        const token = await userService.createUser(req.body);
-        return res.status(200).json({"success": true, "token": token});
+        const user = await userService.createUser(req.body);
+        res.status(200).json({"success": true, "message": "Email sent to registered user"})
     } catch(err) {
         return res.status(500).json({"status": false, "message": "User creation failed!"})
     }
@@ -52,4 +52,16 @@ const getAllData = async (req, res) => {
     }
 };
 
-module.exports = { createUser, deleteUser, updateUser, loginUser, getAllData };
+const verifyToken = async (req, res) => {
+    try {
+        const user = await userService.verifyToken(req);
+        if(!user) {
+            res.status(400).json({"success": false, "message": "Invalid Token, Authentication Failed!"});
+        }
+        return res.status(200).json({"success": true, "user": user});
+    } catch (err) {
+        res.status(400).json(err.message);
+    }
+}
+
+module.exports = { createUser, deleteUser, updateUser, loginUser, getAllData, verifyToken };
